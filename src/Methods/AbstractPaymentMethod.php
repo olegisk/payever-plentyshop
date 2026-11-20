@@ -2,6 +2,7 @@
 
 namespace Payever\Methods;
 
+use Payever\Helper\PayeverHelper;
 use Payever\Services\PayeverSdkService;
 use Plenty\Modules\Basket\Contracts\BasketRepositoryContract;
 use Plenty\Modules\Basket\Models\Basket;
@@ -152,6 +153,7 @@ class AbstractPaymentMethod extends PaymentMethodService
      * @param ConfigRepository $configRepository
      * @param BasketRepositoryContract $basketRepositoryContract
      * @return string
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public function getName(
         ConfigRepository $configRepository,
@@ -159,7 +161,7 @@ class AbstractPaymentMethod extends PaymentMethodService
     ): string {
         $basket = $basketRepositoryContract->load();
         $titleKey = 'Payever.' . $this->getMethodCode() . '.title';
-        $name = $configRepository->get($titleKey);
+        $name = PayeverHelper::rebrandPaymentText((string) $configRepository->get($titleKey));
 
         if (!strlen($name)) {
             $name = 'Payever';
@@ -203,13 +205,14 @@ class AbstractPaymentMethod extends PaymentMethodService
      *
      * @param ConfigRepository $configRepository
      * @return string
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public function getDescription(ConfigRepository $configRepository): string
     {
         if ($configRepository->get('Payever.display_payment_description') == 1) {
             $descriptionKey = 'Payever.' . $this->getMethodCode() . '.description';
 
-            return $configRepository->get($descriptionKey) ?? '';
+            return PayeverHelper::rebrandPaymentText((string) $configRepository->get($descriptionKey));
         }
 
         return '';

@@ -70,6 +70,7 @@ class ConfigController extends Controller
      * and map it to plugin config fields
      *
      * @return \Symfony\Component\HttpFoundation\Response
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public function synchronize()
     {
@@ -107,6 +108,11 @@ class ConfigController extends Controller
 
                 foreach ($fieldsMap as $pluginKey => $apiKey) {
                     $updatedConfig["{$methodKey}.{$pluginKey}"] = strip_tags($optionData[$apiKey]);
+                }
+                foreach (['title', 'description'] as $textKey) {
+                    $updatedConfig["{$methodKey}.{$textKey}"] = PayeverHelper::rebrandPaymentText(
+                        (string) $updatedConfig["{$methodKey}.{$textKey}"]
+                    );
                 }
 
                 $updatedConfig["{$methodKey}.allowed_countries"] = implode(',', $optionData['options']['countries']);

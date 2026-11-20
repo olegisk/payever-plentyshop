@@ -53,6 +53,13 @@ class PayeverHelper
     use Loggable;
 
     const PLUGIN_KEY = 'plenty_payever';
+
+    /**
+     * Renamed payment brands: Zinia is Openbank Pay now (payment method codes stay zinia_*)
+     */
+    const BRAND_RENAMES = [
+        'Zinia' => 'Openbank Pay',
+    ];
     const PLUGIN_CONFIG_PREFIX = 'Payever.';
 
     const COMMAND_TIMESTAMP_KEY = 'command_timestamp';
@@ -60,7 +67,7 @@ class PayeverHelper
     const LIVE_URL_CONFIG_KEY = 'live_url';
     const API_VERSION_KEY  = 'api_version';
 
-    const PLUGIN_VERSION = '3.7.1';
+    const PLUGIN_VERSION = '3.7.2';
 
     const ACTION_PREFIX = "action.";
 
@@ -176,31 +183,31 @@ class PayeverHelper
         ],
         'ZINIA_BNPL' => [
             'class' => ZiniaBnplPaymentMethod::class,
-            'name' => 'Zinia BNPL',
+            'name' => 'Openbank Pay BNPL',
         ],
         'ZINIA_BNPL_DE' => [
             'class' => ZiniaBnplDePaymentMethod::class,
-            'name' => 'Zinia BNPL DE',
+            'name' => 'Openbank Pay BNPL DE',
         ],
         'ZINIA_INSTALLMENT' => [
             'class' => ZiniaInstallmentPaymentMethod::class,
-            'name' => 'Zinia Installment',
+            'name' => 'Openbank Pay Installment',
         ],
         'ZINIA_INSTALLMENT_DE' => [
             'class' => ZiniaInstallmentDePaymentMethod::class,
-            'name' => 'Zinia Installment DE',
+            'name' => 'Openbank Pay Installment DE',
         ],
         'ZINIA_SLICE_THREE' => [
             'class' => ZiniaSliceThreePaymentMethod::class,
-            'name' => 'Zinia Slice Three',
+            'name' => 'Openbank Pay Slice Three',
         ],
         'ZINIA_SLICE_THREE_DE' => [
             'class' => ZiniaSliceThreeDePaymentMethod::class,
-            'name' => 'Zinia Slice Three DE',
+            'name' => 'Openbank Pay Slice Three DE',
         ],
         'ZINIA_LENDING_DE' => [
             'class' => ZiniaLendingDePaymentMethod::class,
-            'name' => 'Zinia Lending',
+            'name' => 'Openbank Pay Lending',
         ],
         'IVY' => [
             'class' => IvyPaymentMethod::class,
@@ -244,6 +251,18 @@ class PayeverHelper
         $this->translator = $translator;
         $this->payeverConfigRepository = $payeverConfigRepository;
         $this->storageLock = $storageLock;
+    }
+
+    /**
+     * Replaces renamed payment brands in payment method titles and descriptions,
+     * payever and stored configurations may still use the old names
+     *
+     * @param string $text
+     * @return string
+     */
+    public static function rebrandPaymentText(string $text): string
+    {
+        return str_replace(array_keys(self::BRAND_RENAMES), array_values(self::BRAND_RENAMES), $text);
     }
 
     /**

@@ -2085,7 +2085,7 @@
           "required": false,
           "label": "Config.payeverTitleLabel",
           "options": {
-            "defaultValue": "Zinia. Achteraf Betalen"
+            "defaultValue": "Openbank Pay Achteraf Betalen"
           }
         },
         "zinia_bnpl.description": {
@@ -2093,7 +2093,7 @@
           "required": false,
           "label": "Config.payeverDescriptionLabel",
           "options": {
-            "defaultValue": "Voldoe in betaalbare maandelijkse termijnen via onze partner Zinia"
+            "defaultValue": "Voldoe in betaalbare maandelijkse termijnen via onze partner Openbank"
           }
         },
         "zinia_bnpl.redirect_method": {
@@ -2208,7 +2208,7 @@
           "required": false,
           "label": "Config.payeverTitleLabel",
           "options": {
-            "defaultValue": "Zinia Rechnungskauf"
+            "defaultValue": "Openbank Pay Rechnungskauf"
           }
         },
         "zinia_bnpl_de.description": {
@@ -2216,7 +2216,7 @@
           "required": false,
           "label": "Config.payeverDescriptionLabel",
           "options": {
-            "defaultValue": "Mit dem Zinia Rechnungskauf geben Sie Ihren Kunden 14 Tage Zeit um den Einkauf zu bezahlen."
+            "defaultValue": "Mit dem Openbank Pay Rechnungskauf geben Sie Ihren Kunden 14 Tage Zeit um den Einkauf zu bezahlen."
           }
         },
         "zinia_bnpl_de.redirect_method": {
@@ -2331,7 +2331,7 @@
           "required": false,
           "label": "Config.payeverTitleLabel",
           "options": {
-            "defaultValue": "Zinia installment NL"
+            "defaultValue": "Openbank Pay Installments NL"
           }
         },
         "zinia_installment.description": {
@@ -2339,7 +2339,7 @@
           "required": false,
           "label": "Config.payeverDescriptionLabel",
           "options": {
-            "defaultValue": "Zinia installment NL"
+            "defaultValue": "Openbank Pay Installments NL"
           }
         },
         "zinia_installment.redirect_method": {
@@ -2454,7 +2454,7 @@
           "required": false,
           "label": "Config.payeverTitleLabel",
           "options": {
-            "defaultValue": "Zinia installment DE"
+            "defaultValue": "Openbank Pay Installments DE"
           }
         },
         "zinia_installment_de.description": {
@@ -2462,7 +2462,7 @@
           "required": false,
           "label": "Config.payeverDescriptionLabel",
           "options": {
-            "defaultValue": "Zinia installment De"
+            "defaultValue": "Openbank Pay Installments DE"
           }
         },
         "zinia_installment_de.redirect_method": {
@@ -2577,7 +2577,7 @@
           "required": false,
           "label": "Config.payeverTitleLabel",
           "options": {
-            "defaultValue": "Zinia slice in 3 NL"
+            "defaultValue": "Openbank Pay Slice in 3 NL"
           }
         },
         "zinia_slice_three.description": {
@@ -2585,7 +2585,7 @@
           "required": false,
           "label": "Config.payeverDescriptionLabel",
           "options": {
-            "defaultValue": "Zinia slice in 3 NL"
+            "defaultValue": "Openbank Pay Slice in 3 NL"
           }
         },
         "zinia_slice_three.redirect_method": {
@@ -2700,7 +2700,7 @@
           "required": false,
           "label": "Config.payeverTitleLabel",
           "options": {
-            "defaultValue": "Zinia slice in 3 DE"
+            "defaultValue": "Openbank Pay Slice in 3 DE"
           }
         },
         "zinia_slice_three_de.description": {
@@ -2708,7 +2708,7 @@
           "required": false,
           "label": "Config.payeverDescriptionLabel",
           "options": {
-            "defaultValue": "Zinia slice in 3 DE"
+            "defaultValue": "Openbank Pay Slice in 3 DE"
           }
         },
         "zinia_slice_three_de.redirect_method": {
@@ -2823,7 +2823,7 @@
           "required": false,
           "label": "Config.payeverTitleLabel",
           "options": {
-            "defaultValue": "Zinia Lending"
+            "defaultValue": "Openbank Pay Lending"
           }
         },
         "zinia_lending_de.description": {
@@ -2831,7 +2831,7 @@
           "required": false,
           "label": "Config.payeverDescriptionLabel",
           "options": {
-            "defaultValue": "Pay in up to 72 Installments with Zinia by Santander, fast and paperless."
+            "defaultValue": "Pay in up to 72 Installments with Openbank Pay by Santander, fast and paperless."
           }
         },
         "zinia_lending_de.redirect_method": {

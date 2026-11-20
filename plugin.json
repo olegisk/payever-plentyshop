@@ -3,7 +3,7 @@
   "marketplaceName"   : {"de":"payever Checkout (experimental)","en":"payever Checkout (experimental)"},
   "namespace"         : "Payever",
   "type"              : "payment",
-  "version"           : "3.7.1",
+  "version"           : "3.7.2",
   "license"           : "GNU AFFERO GENERAL PUBLIC LICENSE",
   "isClosedSource"    : false,
   "pluginIcon"        : "icon_plugin_xs.png",
@@ -62,7 +62,7 @@
     "payever/logger-sdk-php": "1.0.0"
   },
   "runOnBuild"        : [
-    "Payever\\Migrations\\CreatePayeverPaymentMethods13",
+    "Payever\\Migrations\\CreatePayeverPaymentMethods14",
     "Payever\\Migrations\\CreatePayeverConfigTable",
     "Payever\\Migrations\\CreatePendingPaymentTable",
     "Payever\\Migrations\\CreateLogTable",

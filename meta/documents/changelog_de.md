@@ -1,5 +1,9 @@
 # Release Informationen für payever
 
+## v3.7.2 (2026-11-21)
+- Zinia heißt jetzt Openbank Pay: Zinia-Zahlungsarten umbenannt (Namen, Einstellungs-Tabs, Assistent, Standardtitel und -beschreibungen) und Logos ersetzt. Die Codes der Zahlungsarten (zinia_*) bleiben unverändert
+- Bestehende Zahlungsarten werden beim nächsten Deployment des Plugin-Sets umbenannt (Zahlungsarten-Migration 14). Titel und Beschreibungen, die noch "Zinia" enthalten (gespeicherte Einstellungen oder payever-Synchronisierung), werden als "Openbank Pay" angezeigt
+
 ## v3.7.1 (2026-11-21)
 - PlentyONE Shop: payever-Zahlung wird für die angelegte Bestellung erstellt, wenn der Storefront die Zahlungsvorbereitung mit "continue" beantwortet (ExecutePayment), das PWA-Client-Plugin leitet zu payever weiter
 - Neue Einstellung "PlentyONE System-URL" für Rückkehr-URLs und Webhooks, wenn die Shop-Domain nur /rest/* an PlentyONE weiterleitet

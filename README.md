@@ -11,6 +11,11 @@
 
 ## What's new in this preview
 
+**3.7.2:**
+- **Zinia is now Openbank Pay.** The Zinia payment methods are renamed to **Openbank Pay**, with new names, settings tabs, default titles and descriptions, and logos, in English and German. For example, *Openbank Pay Rechnungskauf* (`zinia_bnpl_de`), *Openbank Pay Ratenkauf* (`zinia_installment_de`) and *Openbank Pay Ratenkredit* (`zinia_lending_de`).
+- The payment method codes don't change, so your settings and existing orders keep working.
+- Existing payment methods are renamed after the next **Deploy plugin set**.
+
 **3.7.1:**
 - **Works when the PlentyONE Shop answers the payment preparation with "continue".** The plugin then creates the payever payment for the placed order, and the PWA client plugin redirects to payever.
 - **New setting *PlentyONE system URL*.** It's for shops whose domain only forwards `/rest/*` to PlentyONE, so `/payment/payever/*` returns a 404 there.

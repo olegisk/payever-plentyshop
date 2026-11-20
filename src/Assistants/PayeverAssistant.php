@@ -2136,7 +2136,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                             ],
                         ],
-                        // Zinia BNPL
+                        // Openbank Pay (formerly Zinia) BNPL
                         [
                             'title' => 'Assistant.ZiniaBnplTab',
                             'description' => 'Assistant.ZiniaBnplTab',
@@ -2161,7 +2161,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                                 'zinia_bnpl.title' => [
                                     'type' => 'text',
-                                    'defaultValue' => 'Zinia. Achteraf Betalen',
+                                    'defaultValue' => 'Openbank Pay Achteraf Betalen',
                                     'options' => [
                                         'name' => 'Assistant.payeverTitleLabel',
                                         'required' => true,
@@ -2169,7 +2169,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                                 'zinia_bnpl.description' => [
                                     'type' => 'text',
-                                    'defaultValue' => 'Voldoe in betaalbare maandelijkse termijnen via onze partner Zinia', //phpcs:ignore
+                                    'defaultValue' => 'Voldoe in betaalbare maandelijkse termijnen via onze partner Openbank', //phpcs:ignore
                                     'options' => [
                                         'name' => 'Assistant.payeverDescriptionLabel',
                                         'required' => false,
@@ -2261,7 +2261,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                             ],
                         ],
-                        // Zinia BNPL DE
+                        // Openbank Pay (formerly Zinia) BNPL DE
                         [
                             'title' => 'Assistant.ZiniaBnplDETab',
                             'description' => 'Assistant.ZiniaBnplDETab',
@@ -2286,7 +2286,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                                 'zinia_bnpl_de.title' => [
                                     'type' => 'text',
-                                    'defaultValue' => 'Zinia Rechnungskauf',
+                                    'defaultValue' => 'Openbank Pay Rechnungskauf',
                                     'options' => [
                                         'name' => 'Assistant.payeverTitleLabel',
                                         'required' => true,
@@ -2294,7 +2294,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                                 'zinia_bnpl_de.description' => [
                                     'type' => 'text',
-                                    'defaultValue' => 'Mit dem Zinia Rechnungskauf geben Sie Ihren Kunden 14 Tage Zeit um den Einkauf zu bezahlen.', //phpcs:ignore
+                                    'defaultValue' => 'Mit dem Openbank Pay Rechnungskauf geben Sie Ihren Kunden 14 Tage Zeit um den Einkauf zu bezahlen.', //phpcs:ignore
                                     'options' => [
                                         'name' => 'Assistant.payeverDescriptionLabel',
                                         'required' => false,
@@ -2386,7 +2386,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                             ],
                         ],
-                        // Zinia Installment
+                        // Openbank Pay (formerly Zinia) Installment
                         [
                             'title' => 'Assistant.ZiniaInstallmentTab',
                             'description' => 'Assistant.ZiniaInstallmentTab',
@@ -2411,7 +2411,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                                 'zinia_installment.title' => [
                                     'type' => 'text',
-                                    'defaultValue' => 'Zinia installment NL',
+                                    'defaultValue' => 'Openbank Pay Installments NL',
                                     'options' => [
                                         'name' => 'Assistant.payeverTitleLabel',
                                         'required' => true,
@@ -2419,7 +2419,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                                 'zinia_installment.description' => [
                                     'type' => 'text',
-                                    'defaultValue' => 'Zinia installment NL', //phpcs:ignore
+                                    'defaultValue' => 'Openbank Pay Installments NL', //phpcs:ignore
                                     'options' => [
                                         'name' => 'Assistant.payeverDescriptionLabel',
                                         'required' => false,
@@ -2511,7 +2511,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                             ],
                         ],
-                        // Zinia Installment DE
+                        // Openbank Pay (formerly Zinia) Installment DE
                         [
                             'title' => 'Assistant.ZiniaInstallmentDETab',
                             'description' => 'Assistant.ZiniaInstallmentDETab',
@@ -2536,7 +2536,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                                 'zinia_installment_de.title' => [
                                     'type' => 'text',
-                                    'defaultValue' => 'Zinia installment DE',
+                                    'defaultValue' => 'Openbank Pay Installments DE',
                                     'options' => [
                                         'name' => 'Assistant.payeverTitleLabel',
                                         'required' => true,
@@ -2544,7 +2544,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                                 'zinia_installment_de.description' => [
                                     'type' => 'text',
-                                    'defaultValue' => 'Zinia installment DE', //phpcs:ignore
+                                    'defaultValue' => 'Openbank Pay Installments DE', //phpcs:ignore
                                     'options' => [
                                         'name' => 'Assistant.payeverDescriptionLabel',
                                         'required' => false,
@@ -2636,7 +2636,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                             ],
                         ],
-                        // Zinia Slice Three
+                        // Openbank Pay (formerly Zinia) Slice Three
                         [
                             'title' => 'Assistant.ZiniaSliceThreeTab',
                             'description' => 'Assistant.ZiniaSliceThreeTab',
@@ -2661,7 +2661,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                                 'zinia_slice_three.title' => [
                                     'type' => 'text',
-                                    'defaultValue' => 'Zinia slice in 3 NL',
+                                    'defaultValue' => 'Openbank Pay Slice in 3 NL',
                                     'options' => [
                                         'name' => 'Assistant.payeverTitleLabel',
                                         'required' => true,
@@ -2669,7 +2669,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                                 'zinia_slice_three.description' => [
                                     'type' => 'text',
-                                    'defaultValue' => 'Zinia slice in 3 NL',
+                                    'defaultValue' => 'Openbank Pay Slice in 3 NL',
                                     'options' => [
                                         'name' => 'Assistant.payeverDescriptionLabel',
                                         'required' => false,
@@ -2761,7 +2761,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                             ],
                         ],
-                        // Zinia Slice Three DE
+                        // Openbank Pay (formerly Zinia) Slice Three DE
                         [
                             'title' => 'Assistant.ZiniaSliceThreeDETab',
                             'description' => 'Assistant.ZiniaSliceThreeDETab',
@@ -2786,7 +2786,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                                 'zinia_slice_three_de.title' => [
                                     'type' => 'text',
-                                    'defaultValue' => 'Zinia slice in 3 DE',
+                                    'defaultValue' => 'Openbank Pay Slice in 3 DE',
                                     'options' => [
                                         'name' => 'Assistant.payeverTitleLabel',
                                         'required' => true,
@@ -2794,7 +2794,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                                 'zinia_slice_three_de.description' => [
                                     'type' => 'text',
-                                    'defaultValue' => 'Zinia slice in 3 DE',
+                                    'defaultValue' => 'Openbank Pay Slice in 3 DE',
                                     'options' => [
                                         'name' => 'Assistant.payeverDescriptionLabel',
                                         'required' => false,
@@ -2886,7 +2886,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                             ],
                         ],
-                        // Zinia Lending DE
+                        // Openbank Pay (formerly Zinia) Lending DE
                         [
                             'title' => 'Assistant.ZiniaLendingDETab',
                             'description' => 'Assistant.ZiniaLendingDETab',
@@ -2911,7 +2911,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                                 'zinia_lending_de.title' => [
                                     'type' => 'text',
-                                    'defaultValue' => 'Zinia Lending',
+                                    'defaultValue' => 'Openbank Pay Lending',
                                     'options' => [
                                         'name' => 'Assistant.payeverTitleLabel',
                                         'required' => true,
@@ -2919,7 +2919,7 @@ class PayeverAssistant extends WizardProvider
                                 ],
                                 'zinia_lending_de.description' => [
                                     'type' => 'text',
-                                    'defaultValue' => 'Pay in up to 72 Installments with Zinia by Santander, fast and paperless.', //phpcs:ignore
+                                    'defaultValue' => 'Pay in up to 72 Installments with Openbank Pay by Santander, fast and paperless.', //phpcs:ignore
                                     'options' => [
                                         'name' => 'Assistant.payeverDescriptionLabel',
                                         'required' => false,
