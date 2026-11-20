@@ -1,5 +1,10 @@
 # Release Informationen für payever
 
+## v3.7.1 (2026-11-21)
+- PlentyONE Shop: payever-Zahlung wird für die angelegte Bestellung erstellt, wenn der Storefront die Zahlungsvorbereitung mit "continue" beantwortet (ExecutePayment), das PWA-Client-Plugin leitet zu payever weiter
+- Neue Einstellung "PlentyONE System-URL" für Rückkehr-URLs und Webhooks, wenn die Shop-Domain nur /rest/* an PlentyONE weiterleitet
+- Debug-Logeinträge für die Ereignisse Zahlungsart-Inhalt und Zahlung ausführen
+
 ## v3.7.0 (2026-11-20)
 - Unterstützung für PlentyONE Shop (plentyShop PWA): Weiterleitungs-Checkout, Rückkehr zu den Bestätigungs-/Checkout-Seiten des PWA
 - Neue Einstellungen "Onlineshop" und "PlentyONE Shop URL"

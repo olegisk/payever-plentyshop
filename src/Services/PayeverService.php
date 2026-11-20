@@ -14,6 +14,8 @@ use Payever\Helper\RoutesHelper;
 use Payever\Repositories\CustomerCompanyAddressRepository;
 use Payever\Traits\Logger;
 use Plenty\Modules\Account\Address\Contracts\AddressRepositoryContract;
+use Plenty\Modules\Account\Address\Models\Address;
+use Plenty\Modules\Authorization\Services\AuthHelper;
 use Plenty\Modules\Account\Contact\Contracts\ContactRepositoryContract;
 use Plenty\Modules\Basket\Contracts\BasketRepositoryContract;
 use Plenty\Modules\Basket\Models\Basket;
@@ -21,6 +23,9 @@ use Plenty\Modules\Basket\Models\BasketItem;
 use Plenty\Modules\Frontend\Services\AccountService;
 use Plenty\Modules\Frontend\Session\Storage\Contracts\FrontendSessionStorageFactoryContract;
 use Plenty\Modules\Item\Item\Contracts\ItemRepositoryContract;
+use Plenty\Modules\Order\Contracts\OrderRepositoryContract;
+use Plenty\Modules\Order\Models\Order;
+use Plenty\Modules\Order\Models\OrderItemType;
 use Plenty\Modules\Order\Shipping\Countries\Contracts\CountryRepositoryContract;
 use Plenty\Modules\Payment\Contracts\PaymentRepositoryContract;
 use Plenty\Modules\Payment\Models\Payment;
@@ -166,6 +171,16 @@ class PayeverService
     private $pwaHelper;
 
     /**
+     * @var OrderRepositoryContract|null
+     */
+    private $orderRepository;
+
+    /**
+     * @var AuthHelper|null
+     */
+    private $authHelper;
+
+    /**
      * @param AccountService $accountService
      * @param CountryRepositoryContract $countryRepository
      * @param ItemRepositoryContract $itemRepository
@@ -291,7 +306,15 @@ class PayeverService
      */
     private function getAddress(int $addressId): array
     {
-        $address = $this->addressRepo->findAddressById($addressId);
+        return $this->mapAddress($this->addressRepo->findAddressById($addressId));
+    }
+
+    /**
+     * @param Address $address
+     * @return array
+     */
+    private function mapAddress($address): array
+    {
         $country = $this->countryRepository->findIsoCode($address->countryId, 'iso_code_2');
 
         return [
@@ -460,6 +483,41 @@ HTML;
         ];
         $payeverPaymentId = '';
 
+        $paymentResponse = $this->sendCreatePaymentRequest($paymentParameters, $billingAddress, $method);
+
+        $pendingPayment = $this->pendingPaymentRepository->getByOrderId($orderId);
+        if (!$pendingPayment) {
+            // @codeCoverageIgnoreStart
+            $pendingPayment = $this->pendingPaymentRepository->create();
+            $pendingPayment->orderId = $orderId;
+            $pendingPayment->payeverPaymentId = $payeverPaymentId;
+            $pendingPayment->data = $basket->toArray();
+
+            $this->log(
+                'debug',
+                __METHOD__,
+                'Payever::debug.checkoutDebug',
+                'Pending payment',
+                ['pendingPaymentToPersist' => $pendingPayment]
+            );
+
+            $this->pendingPaymentRepository->persist($pendingPayment);
+            // @codeCoverageIgnoreEnd
+        }
+
+        return $paymentResponse;
+    }
+
+    /**
+     * Adds return URLs, billing and company data to the payment parameters and creates the payever payment
+     *
+     * @param array $paymentParameters
+     * @param array $billingAddress
+     * @param string $method
+     * @return mixed
+     */
+    private function sendCreatePaymentRequest(array $paymentParameters, array $billingAddress, string $method)
+    {
         $paymentParameters = array_merge($paymentParameters, $this->getPaymentCallbackUrls());
         $paymentParameters['billing_address'] = $billingAddress;
         $paymentParameters['force_redirect'] = $this->isRedirectMethod($method) || $this->isPwaCheckout();
@@ -498,26 +556,6 @@ HTML;
             'createPaymentRequest Response',
             ['paymentResponse' => $paymentResponse]
         );
-
-        $pendingPayment = $this->pendingPaymentRepository->getByOrderId($orderId);
-        if (!$pendingPayment) {
-            // @codeCoverageIgnoreStart
-            $pendingPayment = $this->pendingPaymentRepository->create();
-            $pendingPayment->orderId = $orderId;
-            $pendingPayment->payeverPaymentId = $payeverPaymentId;
-            $pendingPayment->data = $basket->toArray();
-
-            $this->log(
-                'debug',
-                __METHOD__,
-                'Payever::debug.checkoutDebug',
-                'Pending payment',
-                ['pendingPaymentToPersist' => $pendingPayment]
-            );
-
-            $this->pendingPaymentRepository->persist($pendingPayment);
-            // @codeCoverageIgnoreEnd
-        }
 
         return $paymentResponse;
     }
@@ -595,6 +633,205 @@ HTML;
 
         return $createPaymentResponse['redirect_url'] ??
             $this->getRedirectUrlByThePaymentStatus($createPaymentResponse);
+    }
+
+    /**
+     * PlentyONE Shop (PWA): the storefront answered doPreparePayment with "continue", placed the order
+     * (doPlaceOrder) and executes the payment for it (doExecutePayment). Creates the payever payment
+     * for the existing order and returns the payever redirect URL, resources/js/pwa/payever.client.ts
+     * sends the customer there.
+     *
+     * @param int $orderId
+     * @param string $method
+     * @return string|null null when the request doesn't come from the PlentyONE Shop
+     */
+    public function executePwaOrderPayment(int $orderId, string $method): ?string
+    {
+        if (!$this->isPwaCheckout()) {
+            return null;
+        }
+
+        $sessionKey = 'payever_pwa_redirect_' . $orderId;
+        $redirectUrl = $this->sessionStorage->getPlugin()->getValue($sessionKey);
+        if (!empty($redirectUrl)) {
+            $this->returnType = 'redirectUrl';
+
+            return (string) $redirectUrl;
+        }
+
+        try {
+            $order = $this->findOrder($orderId);
+            $createPaymentResponse = $this->processCreatePaymentRequestForOrder($order, $method);
+            if (!empty($createPaymentResponse['error'])) {
+                $this->returnType = 'errorCode';
+
+                return $this->payeverHelper->retrieveErrorMessageFromSdkResponse($createPaymentResponse);
+            }
+
+            $this->orderTotalRepository->create($order->id);
+            if (is_array($order->orderItems) || $order->orderItems instanceof \Traversable) {
+                foreach ($order->orderItems as $orderItem) {
+                    $this->orderTotalItemRepository->create($orderItem);
+                }
+            }
+
+            $redirectUrl = $createPaymentResponse['redirect_url']
+                ?? $this->getRedirectUrlByThePaymentStatus($createPaymentResponse);
+            if (empty($redirectUrl)) {
+                throw new Exception('An unknown error occurred, please try again.');
+            }
+
+            $this->sessionStorage->getPlugin()->setValue($sessionKey, $redirectUrl);
+            $this->returnType = 'redirectUrl';
+
+            return (string) $redirectUrl;
+        } catch (\Throwable $exception) {
+            $this->log(
+                'error',
+                __METHOD__,
+                'Payever::debug.createPaymentResponse',
+                'Exception: ' . $exception->getMessage(),
+                ['orderId' => $orderId]
+            );
+            $this->returnType = 'errorCode';
+
+            return $exception->getMessage();
+        }
+    }
+
+    /**
+     * Create payment request for an already placed order
+     *
+     * @param Order $order
+     * @param string $method
+     * @return mixed
+     */
+    public function processCreatePaymentRequestForOrder($order, string $method)
+    {
+        $amounts = $this->getOrderAmounts($order);
+        $grossTotal = (float) ($amounts->invoiceTotal ?? $amounts->grossTotal ?? 0);
+        $feeAmount = $this->getFeeAmount($grossTotal, $method);
+
+        $billingAddress = $this->mapAddress($order->billingAddress);
+        $shippingAddress = $order->deliveryAddress
+            ? $this->mapAddress($order->deliveryAddress)
+            : $billingAddress;
+
+        $paymentParameters = [
+            // Same amount/fee calculation as for the basket (processCreatePaymentRequest)
+            'amount' => round($grossTotal - $feeAmount, 2),
+            'fee' => round((float) ($amounts->shippingCostsGross ?? 0) - $feeAmount, 2),
+            'order_id' => $order->id,
+            'currency' => $amounts->currency,
+            'cart' => $this->getOrderItemsForPayment($order),
+            'payment_method' => $method,
+            'locale' => explode('_', (string) $this->sessionStorage->getLocaleSettings()->language)[0],
+            'email' => $billingAddress['email'],
+            'phone' => $billingAddress['phone'],
+            'shipping_address' => $shippingAddress,
+            'shipping_method' => '',
+            'shipping_title' => '',
+            'client_ip' => $this->payeverHelper->getClientIP()
+        ];
+
+        return $this->sendCreatePaymentRequest($paymentParameters, $billingAddress, $method);
+    }
+
+    /**
+     * @param Order $order
+     * @return mixed
+     */
+    private function getOrderAmounts($order)
+    {
+        $amounts = $order->amounts;
+        if ($amounts instanceof \Traversable) {
+            $amounts = iterator_to_array($amounts);
+        }
+
+        if (!is_array($amounts) || empty($amounts)) {
+            throw new Exception('Order amounts are missing');
+        }
+
+        // Prefer the amount in the order currency
+        foreach ($amounts as $amount) {
+            if (empty($amount->isSystemCurrency)) {
+                return $amount;
+            }
+        }
+
+        return reset($amounts);
+    }
+
+    /**
+     * @param Order $order
+     * @return array
+     */
+    private function getOrderItemsForPayment($order): array
+    {
+        $productTypes = [
+            OrderItemType::TYPE_VARIATION,
+            OrderItemType::TYPE_ITEM_BUNDLE,
+            OrderItemType::TYPE_UNASSIGEND_VARIATION,
+        ];
+        $items = [];
+        foreach ($order->orderItems ?? [] as $orderItem) {
+            if (!in_array((int) $orderItem->typeId, $productTypes, true)) {
+                continue;
+            }
+
+            $itemAmounts = $orderItem->amounts;
+            if ($itemAmounts instanceof \Traversable) {
+                $itemAmounts = iterator_to_array($itemAmounts);
+            }
+            $price = is_array($itemAmounts) && !empty($itemAmounts) ? (float) reset($itemAmounts)->priceGross : 0.0;
+            $quantity = (int) $orderItem->quantity;
+
+            $items[] = [
+                'name' => (string) $orderItem->orderItemName,
+                'price' => $price,
+                'unit_price' => $price,
+                'total_amount' => $price * $quantity,
+                'quantity' => $quantity,
+                'identifier' => (string) $orderItem->itemVariationId,
+                'vatRate' => (float) $orderItem->vatRate,
+                'description' => '',
+                'thumbnail' => '',
+                'url' => '',
+            ];
+        }
+
+        return $items;
+    }
+
+    /**
+     * @param int $orderId
+     * @return Order
+     * @codeCoverageIgnore
+     */
+    protected function findOrder(int $orderId)
+    {
+        $orderRepository = $this->orderRepository ?? pluginApp(OrderRepositoryContract::class);
+        $authHelper = $this->authHelper ?? pluginApp(AuthHelper::class);
+
+        return $authHelper->processUnguarded(
+            function () use ($orderRepository, $orderId) {
+                return $orderRepository->findOrderById($orderId, ['addresses', 'amounts', 'orderItems.amounts']);
+            }
+        );
+    }
+
+    /**
+     * @param OrderRepositoryContract $orderRepository
+     * @param AuthHelper $authHelper
+     * @return $this
+     * @internal
+     */
+    public function setOrderAccess($orderRepository, $authHelper): self
+    {
+        $this->orderRepository = $orderRepository;
+        $this->authHelper = $authHelper;
+
+        return $this;
     }
 
     /**
@@ -1180,16 +1417,16 @@ HTML;
     private function getRedirectUrlByThePaymentStatus($createPaymentResponse)
     {
         $callbackUrls = $this->getPaymentCallbackUrls();
-        $redirectUrl = $callbackUrls['success_url'];
+        $redirectUrl = $callbackUrls['success_url'] ?? '';
         $paymentStatus = $createPaymentResponse['result']['status'];
         $paymentId = $createPaymentResponse['result']['id'];
 
         if (StatusHelper::STATUS_DECLINED === $paymentStatus || StatusHelper::STATUS_FAILED === $paymentStatus) {
-            $redirectUrl = $callbackUrls['failure_url'];
+            $redirectUrl = $callbackUrls['failure_url'] ?? '';
         }
 
         if (StatusHelper::STATUS_CANCELLED === $paymentStatus) {
-            $redirectUrl = $callbackUrls['cancel_url'];
+            $redirectUrl = $callbackUrls['cancel_url'] ?? '';
         }
 
         return \str_replace('--PAYMENT-ID--', $paymentId, $redirectUrl);

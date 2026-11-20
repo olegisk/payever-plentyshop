@@ -36,6 +36,7 @@ use Plenty\Modules\EventProcedures\Services\Entries\ProcedureEntry;
 use Plenty\Modules\EventProcedures\Services\EventProceduresService;
 use Plenty\Modules\Order\Pdf\Events\OrderPdfGenerationEvent;
 use Plenty\Modules\Order\Pdf\Models\OrderPdfGeneration;
+use Plenty\Modules\Payment\Events\Checkout\ExecutePayment;
 use Plenty\Modules\Payment\Events\Checkout\GetPaymentMethodContent;
 use Plenty\Modules\Payment\Method\Contracts\PaymentMethodContainer;
 use Plenty\Modules\Payment\Models\PaymentProperty;
@@ -172,6 +173,7 @@ class PayeverServiceProvider extends ServiceProvider
         $payeverMops = $paymentHelper->getMopKeyToIdMap();
 
         $this->eventPaymentMethodContent($eventDispatcher, $payeverMops, $basket, $payeverService);
+        $this->eventExecutePayment($eventDispatcher, $payeverMops, $payeverService);
         $this->eventOrderPdfGeneration($eventDispatcher, $paymentHelper, $payeverMops, $payeverService);
     }
 
@@ -196,9 +198,54 @@ class PayeverServiceProvider extends ServiceProvider
 
                 if (in_array($mop, $payeverMops)) {
                     $methodKey = array_search($mop, $payeverMops);
+                    $this->getLogger(self::LOGGER_CODE)
+                        ->setReferenceType('payeverLog')
+                        ->debug('Payever::debug.paymentMethodContent', ['mop' => $mop, 'method' => $methodKey]);
                     $event->setValue($payeverService->preparePayeverPayment($basket->load(), strtolower($methodKey)));
                     $event->setType($payeverService->getReturnType());
                 }
+            }
+        );
+    }
+
+    /**
+     * PlentyONE Shop (PWA): when the storefront doesn't receive a redirect from GetPaymentMethodContent,
+     * it places the order and executes the payment. The payever payment is then created for that order.
+     *
+     * @param Dispatcher $eventDispatcher
+     * @param array $payeverMops
+     * @param PayeverService $payeverService
+     * @return void
+     */
+    private function eventExecutePayment(
+        Dispatcher $eventDispatcher,
+        array $payeverMops,
+        PayeverService $payeverService
+    ) {
+        $eventDispatcher->listen(
+            ExecutePayment::class,
+            function (ExecutePayment $event) use ($payeverMops, $payeverService) {
+                $mop = $event->getMop();
+                if (!in_array($mop, $payeverMops)) {
+                    return;
+                }
+
+                $methodKey = strtolower((string) array_search($mop, $payeverMops));
+                $this->getLogger(self::LOGGER_CODE)
+                    ->setReferenceType('payeverLog')
+                    ->debug(
+                        'Payever::debug.executePayment',
+                        ['mop' => $mop, 'method' => $methodKey, 'orderId' => $event->getOrderId()]
+                    );
+
+                $redirectUrl = $payeverService->executePwaOrderPayment((int) $event->getOrderId(), $methodKey);
+                if ($redirectUrl === null) {
+                    // plentyShop LTS: the payment was already handled in GetPaymentMethodContent
+                    return;
+                }
+
+                $event->setType($payeverService->getReturnType());
+                $event->setValue($redirectUrl);
             }
         );
     }

@@ -11,6 +11,12 @@
 
 ## What's new in this preview
 
+**3.7.1:**
+- **Works when the PlentyONE Shop answers the payment preparation with "continue".** The plugin then creates the payever payment for the placed order, and the PWA client plugin redirects to payever.
+- **New setting *PlentyONE system URL*.** It's for shops whose domain only forwards `/rest/*` to PlentyONE, so `/payment/payever/*` returns a 404 there.
+
+**3.7.0:**
+
 - **PlentyONE Shop (PWA) support:**
   - the payever checkout works through a redirect
   - after the payment the customer returns to the PWA order confirmation page, or to the checkout if the payment was cancelled or declined
@@ -18,6 +24,7 @@
 - **New settings** in *Plugin set » payever » Configuration » Settings*:
   - **Storefront**: *Detect automatically* (default), *plentyShop LTS (Ceres)* or *PlentyONE Shop (PWA)*
   - **PlentyONE Shop URL**: optional, the public URL of the PWA, for example `https://shop.example.com`. If it's empty, the client domain is used.
+  - **PlentyONE system URL**: optional, the address of your PlentyONE system, for example `https://p12345.my.plentysystems.com`. payever's return URLs and webhooks go there.
 - **plentyShop LTS (Ceres)** keeps working as before, but is no longer required to install the plugin.
 - **Fix:** customers returning from pending payments created with payever API v3 now reach the correct page.
 
@@ -70,16 +77,20 @@ The preview uses the same plugin name as the official marketplace plugin. **A pl
 2. Open **Plugin set » payever » Configuration » Settings**:
    - **Storefront:** leave on *Detect automatically*.
    - **PlentyONE Shop URL:** set it if your PWA domain differs from the client domain.
+   - **PlentyONE system URL:** check `https://<your shop domain>/payment/payever/checkoutStatus` in a browser. If it shows your shop's 404 page, enter your system address here, for example `https://p12345.my.plentysystems.com`. It must start with `https://`.
    - **Create order before payment:** *Yes* is recommended for PlentyONE Shop.
 3. Open **System » Orders » Payment » payever Checkout** and click **Synchronize** to load the payment methods from your payever account.
 4. Open **Setup » Orders » Payment » Methods** and activate the payever payment methods for the test client.
 5. **Deploy the plugin set again.** Changes can take a few minutes to appear because of caching.
 
-### 6. PlentyONE Shop (PWA) only: add the payever client plugin
+### 6. PlentyONE Shop (PWA) only: add the payever client plugin (required)
 1. Copy [`resources/js/pwa/payever.client.ts`](resources/js/pwa/payever.client.ts) from this repository into your PWA project as `apps/web/app/plugins/payever.client.ts`.
 2. Build and deploy the PWA.
 
-The plugin empties the cart after a successful payment and shows a message when the payment is pending, cancelled or declined. Without it payments still work, but customers see no payment status message and may keep a full cart.
+The plugin:
+- **redirects to the payever payment page** when your shop places the order before the payment. Without it, the customer lands on the order confirmation of an unpaid order.
+- empties the cart after a successful payment
+- shows a message when the payment is pending, cancelled or declined
 
 ### 7. Optional: automatic order actions
 In **Setup » Orders » Events** you can create events that run the payever procedures: *Refund*, *Partial return*, *Cancel* and *Shipping the payever payment*. Shipping is required for buy-now-pay-later and installment methods.
@@ -94,7 +105,9 @@ For each payever payment method:
 - [ ] If the payment is declined, you return to the checkout with a decline message.
 - [ ] Refund, cancel and shipping from the order (or through events) show the correct amounts in your payever account.
 
-If something goes wrong, check **Data » Log** (filter by plugin **Payever**) and send us:
+If something goes wrong, check **Data » Log** (filter by plugin **Payever**). For each checkout you should see `paymentMethodContent` or `executePayment`. If neither appears, the plugin set linked to your shop's client doesn't contain the payever plugin, or the selected payment method isn't a payever one.
+
+Send us:
 - the time of the test
 - the order ID
 - the payment method

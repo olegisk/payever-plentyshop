@@ -106,13 +106,20 @@ class PwaHelper
     }
 
     /**
-     * Base URL of the PlentyONE system that serves the plugin routes.
-     * In a PWA checkout this is the API endpoint the PWA middleware talks to.
+     * Base URL of the PlentyONE system that serves the plugin routes: the "PlentyONE system URL"
+     * setting, otherwise the host of the request the PWA middleware sent (its API endpoint).
      *
      * @return string
      */
     public function getBackendBaseUrl(): string
     {
+        // Needed when the PWA middleware talks to PlentyONE through the shop domain
+        // that only forwards /rest/*, e.g. https://p12345.my.plentysystems.com
+        $configuredUrl = trim((string) $this->config->get('Payever.backend_url'));
+        if (preg_match('~^https://[^/\s?#]+~i', $configuredUrl, $match)) {
+            return rtrim($match[0], '/');
+        }
+
         $host = (string) $this->request->getHttpHost();
         if ($host !== '') {
             return 'https://' . $host;

@@ -1,5 +1,10 @@
 # Release Notes for payever
 
+## v3.7.1 (2026-11-21)
+- PlentyONE Shop: create the payever payment for the placed order when the storefront answers the payment preparation with "continue" (ExecutePayment), the PWA client plugin redirects to payever
+- Added "PlentyONE system URL" setting for return URLs and webhooks when the shop domain only forwards /rest/* to PlentyONE
+- Added debug log entries for the payment method content and execute payment events
+
 ## v3.7.0 (2026-11-20)
 - Added support for PlentyONE Shop (plentyShop PWA): redirect checkout, return to the PWA confirmation/checkout pages
 - Added "Storefront" and "PlentyONE Shop URL" settings

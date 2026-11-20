@@ -188,6 +188,14 @@
             "defaultValue": ""
           }
         },
+        "backend_url": {
+          "type": "inputText",
+          "required": false,
+          "label": "Config.backendUrlLabel",
+          "options": {
+            "defaultValue": ""
+          }
+        },
         "fe_widget_display_on_product": {
           "type": "selectBox",
           "required": false,
