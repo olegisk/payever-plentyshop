@@ -1,0 +1,15 @@
+### OS cache
+Thumbs.db
+.DS_Store
+
+.env
+.idea/
+plugin*.zip
+srv/
+www/
+vendor/
+behat.yml
+phpunit.xml
+.phpunit.result.cache
+29994/
+plenty.ignore

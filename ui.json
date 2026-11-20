@@ -1,0 +1,14 @@
+{
+  "defaultEntryPoint": "index.html",
+  "namespace": "Payever",
+  "icon": "icon-flag_none",
+  "menuEntries": [
+    {
+      "label": "payever Checkout",
+      "menu": "system/orders/payment",
+      "urlKey": "payever",
+      "entryPoint": "index.html",
+      "icon": "none"
+    }
+  ]
+}

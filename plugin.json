@@ -1,0 +1,76 @@
+{
+  "name"              : "Payever",
+  "marketplaceName"   : {"de":"payever Checkout (experimental)","en":"payever Checkout (experimental)"},
+  "namespace"         : "Payever",
+  "type"              : "payment",
+  "version"           : "3.7.0",
+  "license"           : "GNU AFFERO GENERAL PUBLIC LICENSE",
+  "isClosedSource"    : false,
+  "pluginIcon"        : "icon_plugin_xs.png",
+  "price"             : 0.00,
+  "description"       : "From Financing & Buy Now Pay Later products to Cards, PayPal and other Wallets, different local payment methods or Open Banking Payments - everything without additional costs and with an easy integration as well as fast onboarding.",
+  "shortDescription"  : {
+    "de":"Von Finanzierung & Rechnungs-/Ratenkauf bis hin zu Kreditkartenzahlung, PayPal und andere Wallets, lokale Zahlarten sowie Sofort-Banküberweisung auf Basis von Open-Banking-Technologie – alles ohne zusätzliche Kosten bei einfachster Integration und schnellem Onboarding.",
+    "en":"From Financing & Buy Now Pay Later products to Cards, PayPal and other Wallets, different local payment methods or Open Banking Payments - everything without additional costs and with an easy integration as well as fast onboarding."
+  },
+  "categories"        : ["3519"],
+  "keywords"          : [
+    "payever payment gateway",
+    "plentymarkets",
+    "e-commerce",
+    "plentymarkets free payment gateways",
+    "Credit Card", "Direct Debit",
+    "Sofort Banking",
+    "Santander Installments"
+  ],
+  "author"            : "payever GmbH",
+  "authorIcon"        : "icon_author_xs.png",
+  "email"             : "service@getpayever.com",
+  "serviceProvider"   : "Payever\\Providers\\PayeverServiceProvider",
+  "containers"        : [],
+  "dataProviders": [
+    {
+      "key": "Payever\\Providers\\DataProviders\\PayeverExpressWidgetCartProvider",
+      "name": "express widget for the cart page",
+      "description": "Block to integrate the payever express widget on the cart page",
+      "defaultLayoutContainer": "Ceres::BasketTotals.AfterTotalSum"
+    },
+    {
+      "key": "Payever\\Providers\\DataProviders\\PayeverExpressWidgetProductProvider",
+      "name": "express widget for the product page",
+      "description": "Block to integrate the payever express widget on the product page",
+      "defaultLayoutContainer": "Ceres::SingleItem.AfterAddToBasket"
+    },
+    {
+      "key"           :"Payever\\Providers\\DataProviders\\CompanySearchContainer",
+      "name"          :"company search on address form",
+      "description"   :"Display company search on address form",
+      "defaultLayoutContainer" :"Ceres::Checkout.AfterScriptsLoaded"
+    }
+  ],
+  "javaScriptFiles"   : [],
+  "require"           : {
+    "IO": ">5.0.45"
+  },
+  "platform": {
+    "php": ">=8.0"
+  },
+  "dependencies": {
+    "payever/core-sdk-php": "2.2.0",
+    "payever/plugins-sdk-php": "2.0.1",
+    "payever/payments-sdk-php": "2.7.0",
+    "payever/logger-sdk-php": "1.0.0"
+  },
+  "runOnBuild"        : [
+    "Payever\\Migrations\\CreatePayeverPaymentMethods13",
+    "Payever\\Migrations\\CreatePayeverConfigTable",
+    "Payever\\Migrations\\CreatePendingPaymentTable",
+    "Payever\\Migrations\\CreateLogTable",
+    "Payever\\Migrations\\CreateOrderTotalTable",
+    "Payever\\Migrations\\CreateOrderTotalItemTable",
+    "Payever\\Migrations\\CreateActionHistoryTable",
+    "Payever\\Migrations\\CreatePaymentActionTable",
+    "Payever\\Migrations\\CreateCustomerCompanyAddressTable",
+    "Payever\\Migrations\\CreatePaymentWidgetTable"
+  ]
+}

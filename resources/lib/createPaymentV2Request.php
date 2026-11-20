@@ -1,0 +1,50 @@
+<?php
+
+require_once __DIR__ . '/PayeverSdkProvider.php';
+
+use Payever\Sdk\Payments\Http\RequestEntity\CreatePaymentV2Request;
+
+$apiData = SdkRestApi::getParam('sdkData');
+$payeverApi = new PayeverSdkProvider($apiData);
+
+$params = SdkRestApi::getParam('payment_parameters');
+$paymentRequest = new CreatePaymentV2Request();
+
+// set order data
+$paymentRequest
+    ->setChannel(json_encode(['name' => 'plentymarkets', 'source' => $apiData['pluginVersion']]))
+    ->setAmount($params['amount'])
+    ->setFee($params['fee'])
+    ->setOrderId($params['order_id'])
+    ->setCurrency($params['currency'])
+    ->setLocale($params['locale'])
+    ->setPaymentMethod($params['payment_method'])
+    ->setCart(json_encode($params['cart']));
+
+$paymentRequest->setPluginVersion($apiData['pluginVersion']);
+$paymentRequest->setPaymentData(json_encode(['force_redirect' => (bool)$params['force_redirect']]));
+
+$paymentRequest->setEmail($params['email'])
+    ->setPhone($params['phone']);
+
+$paymentRequest->setShippingAddress(json_encode($params['shipping_address']));
+$paymentRequest->setBillingAddress(json_encode($params['billing_address']));
+
+$paymentRequest
+    ->setSuccessUrl($params['success_url'])
+    ->setPendingUrl($params['pending_url'])
+    ->setFailureUrl($params['failure_url'])
+    ->setCancelUrl($params['cancel_url'])
+    ->setNoticeUrl($params['notice_url']);
+
+try {
+    return $payeverApi->getPaymentsApiClient()
+        ->createPaymentV2Request($paymentRequest)
+        ->getResponseEntity()
+        ->toArray();
+} catch (Exception $exception) {
+    return [
+        'error' => true,
+        'error_msg' => $exception->getMessage(),
+    ];
+}
