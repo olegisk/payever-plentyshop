@@ -67,7 +67,7 @@ class PayeverHelper
     const LIVE_URL_CONFIG_KEY = 'live_url';
     const API_VERSION_KEY  = 'api_version';
 
-    const PLUGIN_VERSION = '3.7.2';
+    const PLUGIN_VERSION = '3.7.3';
 
     const ACTION_PREFIX = "action.";
 

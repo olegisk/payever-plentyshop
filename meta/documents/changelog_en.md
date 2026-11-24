@@ -1,5 +1,13 @@
 # Release Notes for payever
 
+## v3.7.3 (2026-11-24)
+- Fixed plugin set deployment: removed the PHP function iterator_to_array, which PlentyONE doesn't allow in plugins (since 3.7.1)
+- PlentyONE Shop client plugin (resources/js/pwa/payever.client.ts):
+  - the cancel/decline message is shown although the PWA redirects the empty checkout to the cart
+  - "Back" from the payever page no longer freezes the page (back/forward cache)
+  - redirects to payever only for payever payment methods
+  - passes the strict TypeScript check of the shop build
+
 ## v3.7.2 (2026-11-21)
 - Zinia is now Openbank Pay: renamed the Zinia payment methods (names, settings tabs, assistant, default titles and descriptions) and replaced the logos. The payment method codes (zinia_*) are unchanged
 - Existing payment methods are renamed on the next plugin set deployment (payment methods migration 14). Titles and descriptions that still contain "Zinia" (saved settings or payever synchronization) are shown as "Openbank Pay"

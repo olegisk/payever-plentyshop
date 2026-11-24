@@ -669,10 +669,8 @@ HTML;
             }
 
             $this->orderTotalRepository->create($order->id);
-            if (is_array($order->orderItems) || $order->orderItems instanceof \Traversable) {
-                foreach ($order->orderItems as $orderItem) {
-                    $this->orderTotalItemRepository->create($orderItem);
-                }
+            foreach ($order->orderItems ?? [] as $orderItem) {
+                $this->orderTotalItemRepository->create($orderItem);
             }
 
             $redirectUrl = $createPaymentResponse['redirect_url']
@@ -743,23 +741,21 @@ HTML;
      */
     private function getOrderAmounts($order)
     {
-        $amounts = $order->amounts;
-        if ($amounts instanceof \Traversable) {
-            $amounts = iterator_to_array($amounts);
-        }
-
-        if (!is_array($amounts) || empty($amounts)) {
-            throw new Exception('Order amounts are missing');
-        }
-
-        // Prefer the amount in the order currency
-        foreach ($amounts as $amount) {
+        // foreach works for arrays and collections (iterator_to_array is not allowed in plugins)
+        $firstAmount = null;
+        foreach ($order->amounts ?? [] as $amount) {
+            // Prefer the amount in the order currency
             if (empty($amount->isSystemCurrency)) {
                 return $amount;
             }
+            $firstAmount = $firstAmount ?? $amount;
         }
 
-        return reset($amounts);
+        if ($firstAmount === null) {
+            throw new Exception('Order amounts are missing');
+        }
+
+        return $firstAmount;
     }
 
     /**
@@ -779,11 +775,11 @@ HTML;
                 continue;
             }
 
-            $itemAmounts = $orderItem->amounts;
-            if ($itemAmounts instanceof \Traversable) {
-                $itemAmounts = iterator_to_array($itemAmounts);
+            $price = 0.0;
+            foreach ($orderItem->amounts ?? [] as $itemAmount) {
+                $price = (float) $itemAmount->priceGross;
+                break;
             }
-            $price = is_array($itemAmounts) && !empty($itemAmounts) ? (float) reset($itemAmounts)->priceGross : 0.0;
             $quantity = (int) $orderItem->quantity;
 
             $items[] = [
