@@ -741,7 +741,7 @@ HTML;
      */
     private function getOrderAmounts($order)
     {
-        // foreach works for arrays and collections (iterator_to_array is not allowed in plugins)
+        // foreach works for arrays and collections, PlentyONE doesn't allow converting iterators to arrays
         $firstAmount = null;
         foreach ($order->amounts ?? [] as $amount) {
             // Prefer the amount in the order currency
